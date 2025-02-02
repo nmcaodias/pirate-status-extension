@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Save Page Titles",
+  "version": "1.0",
+  "description": "Saves the title of the current page when you press a button.",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
