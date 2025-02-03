@@ -11,18 +11,18 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Listen for messages
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        console.log("Title:", request.pageData.title);
-        console.log("URL:", request.pageData.url);
-        console.log("Headings:", request.pageData.headings);
-        console.log("Paragraphs:", request.pageData.paragraphs);
-    });
-
     // Save title on button click
     saveButton.addEventListener("click", function () {
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             const pageTitle = tabs[0].title;
+            
+            // Listen for messages
+            chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+                console.log("Title:", request.pageData.title);
+                console.log("URL:", request.pageData.url);
+                console.log("Headings:", request.pageData.headings);
+                console.log("Paragraphs:", request.pageData.paragraphs);
+            });
             
             chrome.storage.local.get("titles", function (data) {
                 const titles = data.titles || [];
@@ -31,6 +31,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     addTitleToList(pageTitle);
                 });
             });
+
+        
         });
     });
 
