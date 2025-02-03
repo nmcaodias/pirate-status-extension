@@ -21,16 +21,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (response) {
                     console.log("Title:", response.title);
                     console.log("URL:", response.url);
-                    console.log("Headings:", response.headings);
-                    console.log("Paragraphs:", response.paragraphs);
+                    console.log("Show Type:", response.showType);
 
-                    const pageTitle = response.title;
+                    const title = response.title;
+                    const url = response.url;
+                    const showType = response.showType;
                     
                     chrome.storage.local.get("titles", function (data) {
                         const titles = data.titles || [];
-                        titles.push(pageTitle);
+                        titles.push(title);
                         chrome.storage.local.set({ "titles": titles }, function () {
-                            addTitleToList(pageTitle);
+                            addTitleToList(title, url, showType);
                         });
                     });
                 }
@@ -39,9 +40,26 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    function addTitleToList(title) {
+    function addTitleToList(title, url, showType) {
         const li = document.createElement("li");
-        li.textContent = title;
+
+        const titleDiv = document.createElement("div");
+        titleDiv.innerHTML = "<b>Title: </b>" + title;
+
+        const urlDiv = document.createElement("div");
+        urlDiv.innerHTML = "<b>URL: </b><a href=" + url + ">" + url + "</a>";
+
+        const typeDiv = document.createElement("div");
+        typeDiv.innerHTML = "<b>Show Type: </b>" + showType;
+
+        // newDiv.append("Title: " + title);
+        // newDiv.append("URL: " + url);
+        // newDiv.append("Show Type: " + showType);
+
+        li.appendChild(titleDiv);
+        li.appendChild(urlDiv);
+        li.appendChild(typeDiv);
+        
         titleList.appendChild(li);
     }
 });
