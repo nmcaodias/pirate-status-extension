@@ -1,3 +1,5 @@
+
+
 document.addEventListener("DOMContentLoaded", function () {
     const saveButton = document.getElementById("saveTitle");
     const titleList = document.getElementById("titleList");
@@ -7,6 +9,14 @@ document.addEventListener("DOMContentLoaded", function () {
         if (data.titles) {
             data.titles.forEach(title => addTitleToList(title));
         }
+    });
+
+    // Listen for messages
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        console.log("Title:", request.pageData.title);
+        console.log("URL:", request.pageData.url);
+        console.log("Headings:", request.pageData.headings);
+        console.log("Paragraphs:", request.pageData.paragraphs);
     });
 
     // Save title on button click
