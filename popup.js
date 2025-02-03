@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             const pageTitle = tabs[0].title;
             
+            /*
             // Listen for messages
             chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 console.log("Title:", request.pageData.title);
@@ -23,6 +24,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("Headings:", request.pageData.headings);
                 console.log("Paragraphs:", request.pageData.paragraphs);
             });
+            */
+            setTimeout(() => {
+                chrome.runtime.sendMessage({ action: "fetchPageData" }, (response) => {
+                    if (response) {
+                        console.log("Title:", response.title);
+                        console.log("URL:", response.url);
+                        console.log("Headings:", response.headings);
+                        console.log("Paragraphs:", response.paragraphs);
+                    }
+                });
+            }, 500);
             
             chrome.storage.local.get("titles", function (data) {
                 const titles = data.titles || [];
