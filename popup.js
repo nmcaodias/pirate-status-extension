@@ -13,38 +13,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Save title on button click
     saveButton.addEventListener("click", function () {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            const pageTitle = tabs[0].title;
-            
-            /*
-            // Listen for messages
-            chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-                console.log("Title:", request.pageData.title);
-                console.log("URL:", request.pageData.url);
-                console.log("Headings:", request.pageData.headings);
-                console.log("Paragraphs:", request.pageData.paragraphs);
-            });
-            */
-            setTimeout(() => {
-                chrome.runtime.sendMessage({ action: "fetchPageData" }, (response) => {
-                    if (response) {
-                        console.log("Title:", response.title);
-                        console.log("URL:", response.url);
-                        console.log("Headings:", response.headings);
-                        console.log("Paragraphs:", response.paragraphs);
-                    }
-                });
-            }, 500);
-            
-            chrome.storage.local.get("titles", function (data) {
-                const titles = data.titles || [];
-                titles.push(pageTitle);
-                chrome.storage.local.set({ "titles": titles }, function () {
-                    addTitleToList(pageTitle);
-                });
-            });
 
-        
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+
+            chrome.runtime.sendMessage({ action: "fetchPageData" }, (response) => {
+
+                if (response) {
+                    console.log("Title:", response.title);
+                    console.log("URL:", response.url);
+                    console.log("Headings:", response.headings);
+                    console.log("Paragraphs:", response.paragraphs);
+
+                    const pageTitle = response.title;
+                    
+                    chrome.storage.local.get("titles", function (data) {
+                        const titles = data.titles || [];
+                        titles.push(pageTitle);
+                        chrome.storage.local.set({ "titles": titles }, function () {
+                            addTitleToList(pageTitle);
+                        });
+                    });
+                }
+                
+            });
         });
     });
 
