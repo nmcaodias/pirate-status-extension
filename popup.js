@@ -78,6 +78,23 @@ document.addEventListener("DOMContentLoaded", function () {
         episodeDiv.innerHTML = `<b>Episode: </b>${episode}`;
 
     }
+    function removeInfoFromStorage(title) {
+        chrome.storage.local.get("info", function (data) {
+            const info = data.info || [];
+
+            const index = info.findIndex(item => item.title === title);
+        
+            if (index !== -1) {
+                info.splice(index, 1);
+                chrome.storage.local.set({ "info": info }, function () {
+                    console.log("Show deleted from storage:", tempInfo.title);
+                });
+            } else {
+                console.log("Show not found in storage:", tempInfo.title);
+            }
+        });
+    }
+
 
     function addInfoToList(title, url, season, episode) {
         const li = document.createElement("li");
@@ -97,6 +114,19 @@ document.addEventListener("DOMContentLoaded", function () {
         const episodeDiv = document.createElement("div");
         episodeDiv.innerHTML = "<b>Episode: </b>" + episode;
         li.appendChild(episodeDiv);
+
+        // Add a button to the <li>
+        const button = document.createElement("button");
+        button.textContent = "Delete";
+        button.style.marginTop = "5px";
+        button.style.width = "100%";
+        button.addEventListener("click", function () {
+            // Remove the <li> when the button is clicked
+            infoList.removeChild(li);
+            // Optional: Remove the item from chrome.storage.local
+            removeInfoFromStorage(title);
+         });
+        li.appendChild(button);
         
         infoList.appendChild(li);
     }
