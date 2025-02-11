@@ -37,16 +37,62 @@ document.addEventListener("DOMContentLoaded", function () {
                     
                     chrome.storage.local.get("info", function (data) {
                         const info = data.info || [];
-                        info.push(tempInfo);
-                        chrome.storage.local.set({ "info": info }, function () {
+                        //check if show has already been saved
+                        const index = info.findIndex(item => item.title === tempInfo.title);
+                        if (index !== -1) {
+                            info[index].url = tempInfo.url;
+                            info[index].season = tempInfo.season;
+                            info[index].episode = tempInfo.episode;
+                            chrome.storage.local.set({ "info": info }, function () {
+                                updateInfoToList(title, url, season, episode);
+                            });
+                        }
+                        else{
+                            info.push(tempInfo);
+                            chrome.storage.local.set({ "info": info }, function () {
                             addInfoToList(title, url, season, episode);
                         });
+                        }
+
                     });
                 }
                 
             });
         });
     });
+    function updateInfoToList(title, url, season, episode) {
+        const infoList = document.getElementById("infoList");
+        const existingLi = Array.from(infoList.getElementsByTagName("li")).find(li => {
+            return li.querySelector("div").textContent.includes(title);
+        });
+
+        const titleDiv = existingLi.querySelector("div:nth-child(1)");
+        const urlDiv = existingLi.querySelector("div:nth-child(2)");
+        const seasonDiv = existingLi.querySelector("div:nth-child(3)");
+        const episodeDiv = existingLi.querySelector("div:nth-child(4)");
+
+        titleDiv.innerHTML = `<b>Title: </b>${title}`;
+        urlDiv.innerHTML = `<b>URL: </b><a href="${url}">${url}</a>`;
+        seasonDiv.innerHTML = `<b>Season: </b>${season}`;
+        episodeDiv.innerHTML = `<b>Episode: </b>${episode}`;
+
+    }
+    function removeInfoFromStorage(title) {
+        chrome.storage.local.get("info", function (data) {
+            const info = data.info || [];
+
+            const index = info.findIndex(item => item.title === title);
+        
+            if (index !== -1) {
+                info.splice(index, 1);
+                chrome.storage.local.set({ "info": info }, function () {
+                    console.log("Show deleted from storage:", tempInfo.title);
+                });
+            } else {
+                console.log("Show not found in storage:", tempInfo.title);
+            }
+        });
+    }
 
     function addInfoToList(title, url, season, episode) {
         const li = document.createElement("li");
@@ -66,6 +112,19 @@ document.addEventListener("DOMContentLoaded", function () {
         const episodeDiv = document.createElement("div");
         episodeDiv.innerHTML = "<b>Episode: </b>" + episode;
         li.appendChild(episodeDiv);
+
+        // Add a button to the <li>
+        const button = document.createElement("button");
+        button.textContent = "Delete";
+        button.style.marginTop = "5px";
+        button.style.width = "100%";
+        button.addEventListener("click", function () {
+            // Remove the <li> when the button is clicked
+            infoList.removeChild(li);
+            // Optional: Remove the item from chrome.storage.local
+            removeInfoFromStorage(title);
+         });
+        li.appendChild(button);
         
         infoList.appendChild(li);
     }
