@@ -19,7 +19,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 title: title,
                 url: url,
                 season: season,
-                episode: episode
+                episode: episode,
+                id: 1,
+                rating: -1
             };
 
             sendResponse(infoData); // Always send a response
