@@ -1,19 +1,31 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "fetchPageData") {
-      try {
-          const pageData = {
-              title: document.title,
-              url: window.location.href,
-              showType: window.location.href.split("/")[3],
-              //headings: Array.from(document.querySelectorAll("h1, h2, h3")).map(h => h.innerText),
-              //paragraphs: Array.from(document.querySelectorAll("p")).map(p => p.innerText).slice(0, 5)
-          };
+    if (request.action === "fetchPageData") {
+        try {
+            //const showType = window.location.href.split("/")[3];
+            const title = document.getElementsByClassName("text-light")[0].innerText;
+            const url = window.location.href;
+            const numberOfEpisodes = document.getElementById("eps-list").getElementsByTagName('*').length;
+            
+            let episode = 1;
+            for (let i = 1; i < numberOfEpisodes + 1; i++) {
+                let episodeHtml = document.getElementById("ep-" + i);
+                if (episodeHtml.disabled) {
+                    episode = i;
+                    break;
+                }
+            }
 
-          sendResponse(pageData); // Always send a response
-      } catch (error) {
-          console.error("Error fetching page data:", error);
-          sendResponse({ error: "Failed to fetch page data." }); // Send error response
-      }
-  }
-  return true; // Keep the channel open for async response
+            const infoData = {
+                title: title,
+                url: url,
+                episode: episode
+            };
+
+            sendResponse(infoData); // Always send a response
+        } catch (error) {
+            console.error("Error fetching page data:", error);
+            sendResponse({ error: "Failed to fetch page data." }); // Send error response
+        }
+    }
+    return true; // Keep the channel open for async response
 });

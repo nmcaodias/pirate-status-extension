@@ -1,13 +1,13 @@
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    const saveButton = document.getElementById("saveTitle");
-    const titleList = document.getElementById("titleList");
+    const saveButton = document.getElementById("saveInfo");
+    const titleList = document.getElementById("infoList");
 
     // Load saved titles
     chrome.storage.local.get("info", function (data) {
         if (data.info) {
-            data.info.forEach(info => addInfoToList(info.title, info.url, info.showType));
+            data.info.forEach(info => addInfoToList(info.title, info.url, info.episode));
         }
     });
 
@@ -21,36 +21,31 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (response) {
                     console.log("Title:", response.title);
                     console.log("URL:", response.url);
-                    console.log("Show Type:", response.showType);
+                    console.log("Episode:", response.episode);
 
                     const title = response.title;
                     const url = response.url;
-                    const showType = response.showType;
-                    const tempInfo = {title: title, url: url, showType: showType};
+                    const episode = response.episode;
+                    const tempInfo = {
+                                        title: title, 
+                                        url: url,
+                                        episode: episode
+                                    };
                     
                     chrome.storage.local.get("info", function (data) {
                         const info = data.info || [];
                         info.push(tempInfo);
                         chrome.storage.local.set({ "info": info }, function () {
-                            addInfoToList(title, url, showType);
+                            addInfoToList(title, url, episode);
                         });
                     });
-                    /*
-                    chrome.storage.local.get("titles", function (data) {
-                        const titles = data.titles || [];
-                        titles.push(title);
-                        chrome.storage.local.set({ "titles": titles }, function () {
-                            addInfoToList(title, url, showType);
-                        });
-                    });
-                    */
                 }
                 
             });
         });
     });
 
-    function addInfoToList(title, url, showType) {
+    function addInfoToList(title, url, episode) {
         const li = document.createElement("li");
 
         const titleDiv = document.createElement("div");
@@ -58,13 +53,13 @@ document.addEventListener("DOMContentLoaded", function () {
         li.appendChild(titleDiv);
         
         const urlDiv = document.createElement("div");
-        urlDiv.innerHTML = "<b>URL: </b><a href=" + url + ">" + url + "</a>";
+        urlDiv.innerHTML = "<b>URL: </b> <a href=" + url + ">" + url + "</a>";
         li.appendChild(urlDiv);
 
-        const typeDiv = document.createElement("div");
-        typeDiv.innerHTML = "<b>Show Type: </b>" + showType;
-        li.appendChild(typeDiv);
+        const episodeDiv = document.createElement("div");
+        episodeDiv.innerHTML = "<b>Episode: </b>" + episode;
+        li.appendChild(episodeDiv);
         
-        titleList.appendChild(li);
+        infoList.appendChild(li);
     }
 });
