@@ -1,1 +1,0 @@
-# pirate-status-extension
